@@ -1,7 +1,7 @@
 from src.utilize.logger import get_log
 
 
-logger = get_log()
+logger = get_log(__name__)
 
 
 def main():
