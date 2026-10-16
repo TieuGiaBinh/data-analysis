@@ -1,7 +1,7 @@
-from src.utilize.logger import get_logger
+from src.utilize.logger import get_log
 
 
-logger = get_logger()
+logger = get_log()
 
 
 def main():
