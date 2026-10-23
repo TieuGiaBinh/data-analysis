@@ -3,11 +3,14 @@ from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 
 
+# Required Google API scope for reading Gmail messages in read-only mode.
 SCOPES = ["https://www.googleapis.com/auth/gmail.readonly"]
 
 
 class GmailService:
+    # Initializes a Gmail API client using OAuth 2.0 credentials.
     def __init__(self, client_id, client_secret, refresh_token):
+        # Create OAuth2 credentials from the provided client ID, secret, and refresh token.
         credentials = Credentials(
           token=None,
           refresh_token=refresh_token,
@@ -17,6 +20,8 @@ class GmailService:
           scopes=SCOPES,
         )
 
+        # Refresh the access token before making API calls.
         credentials.refresh(Request())
 
+        # Build the Gmail API service instance for version v1.
         self.service = build('gmail', 'v1', credentials=credentials, cache_discovery=False)
