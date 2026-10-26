@@ -1,6 +1,10 @@
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
+from src.utilize.logger import get_log
+
+
+logger = get_log(__name__)
 
 
 # Required Google API scope for reading Gmail messages in read-only mode.
@@ -25,3 +29,14 @@ class GmailService:
 
         # Build the Gmail API service instance for version v1.
         self.service = build('gmail', 'v1', credentials=credentials, cache_discovery=False)
+
+
+    def get_email(self, key_word: str) -> list:
+        response = (self.service.users().messages().list(
+                        userId='me',
+                        q='subject="TCBS - "'
+                            ).execute()
+                   )
+        gmail_ids = [gmail['id'] for gmail in response['message']]
+        logger.info(gmail_ids)
+        return gmail_ids
