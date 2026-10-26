@@ -4,9 +4,6 @@ from googleapiclient.discovery import build
 from src.utilize.logger import get_log
 
 
-logger = get_log(__name__)
-
-
 # Required Google API scope for reading Gmail messages in read-only mode.
 SCOPES = ["https://www.googleapis.com/auth/gmail.readonly"]
 
@@ -34,9 +31,8 @@ class GmailService:
     def get_email(self, key_word: str) -> list:
         response = (self.service.users().messages().list(
                         userId='me',
-                        q=f'subject={key_word}'
+                        q=f'subject:{key_word}'
                             ).execute()
                    )
         gmail_ids = [gmail['id'] for gmail in response['messages']]
-        logger.info(gmail_ids)
         return gmail_ids
