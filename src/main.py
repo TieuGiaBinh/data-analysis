@@ -1,4 +1,5 @@
 from src.utilize.logger import get_log
+from src.services.gmail_service import GmailService
 
 
 logger = get_log(__name__)
