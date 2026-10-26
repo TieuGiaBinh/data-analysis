@@ -26,12 +26,12 @@ class GmailService:
         # Build the Gmail API service instance for version v1.
         self.service = build('gmail', 'v1', credentials=credentials, cache_discovery=False)
 
-
+    
     def get_emails(self, key_word: str) -> list:
         response = (self.service.users().messages().list(
                         userId='me',
                         q=f'subject:{key_word}'
                             ).execute()
-                   )
+                       )
         gmail_ids = [gmail['id'] for gmail in response['messages']]
         return gmail_ids
