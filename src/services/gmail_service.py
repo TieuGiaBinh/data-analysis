@@ -12,26 +12,31 @@ class GmailService:
     def __init__(self, client_id, client_secret, refresh_token):
         # Create OAuth2 credentials from the provided client ID, secret, and refresh token.
         credentials = Credentials(
-          token=None,
-          refresh_token=refresh_token,
-          token_uri='https://oauth2.googleapis.com/token',
-          client_id=client_id,
-          client_secret=client_secret,
-          scopes=SCOPES,
+            token=None,
+            refresh_token=refresh_token,
+            token_uri='https://oauth2.googleapis.com/token',
+            client_id=client_id,
+            client_secret=client_secret,
+            scopes=SCOPES,
         )
 
         # Refresh the access token before making API calls.
         credentials.refresh(Request())
 
         # Build the Gmail API service instance for version v1.
-        self.service = build('gmail', 'v1', credentials=credentials, cache_discovery=False)
+        self.service = build(
+            'gmail',
+            'v1',
+            credentials=credentials,
+            cache_discovery=False,
+        )
 
-    
     def get_emails(self, key_word: str) -> list:
-        response = (self.service.users().messages().list(
-                        userId='me',
-                        q=f'subject:{key_word}'
-                            ).execute()
-                       )
-        gmail_ids = [gmail['id'] for gmail in response['messages']]
+        response = (
+            self.service.users()
+            .messages()
+            .list(userId='me', q=f'subject:{key_word}')
+            .execute()
+        )
+        gmail_ids = [gmail['id'] for gmail in response.get('messages', [])]
         return gmail_ids
