@@ -32,11 +32,20 @@ class GmailService:
         )
 
     def get_emails(self, key_word: str) -> list:
+        # Search Gmail messages whose subject contains the provided keyword.
+        # The Gmail API supports Gmail query syntax, so we filter by subject:
+        # `subject:<keyword>`.
         response = (
             self.service.users()
             .messages()
             .list(userId='me', q=f'subject:{key_word}')
             .execute()
         )
+
+        # Extract each message ID from the API response.
+        # If no messages match the search, `messages` may be missing,
+        # so we use `.get(..., [])` to avoid a KeyError.
         gmail_ids = [gmail['id'] for gmail in response.get('messages', [])]
+
+        # Return the list of matching Gmail message IDs.
         return gmail_ids
