@@ -31,7 +31,7 @@ class GmailService:
             cache_discovery=False,
         )
 
-    def get_emails(self, key_word: str) -> list:
+    def get_email_ids(self, key_word: str) -> list:
         # Search Gmail messages whose subject contains the provided keyword.
         # The Gmail API supports Gmail query syntax, so we filter by subject:
         # `subject:<keyword>`.
@@ -49,3 +49,14 @@ class GmailService:
 
         # Return the list of matching Gmail message IDs.
         return gmail_ids
+
+    def get_email_payload(self, gmail_id: str):
+        response = (
+            self.service.users()
+            .messages()
+            .get(userId='me', id='gmail_id', format='full', fields='payload')
+            .execute()
+        )
+
+        return response
+        
