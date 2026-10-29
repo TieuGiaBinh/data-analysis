@@ -59,4 +59,3 @@ class GmailService:
         )
 
         return response
-        
