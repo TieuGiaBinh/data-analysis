@@ -70,11 +70,11 @@ class GmailService:
 
         for part in parts:
             filename = part.get('filename', '')
-    
+
             if filename.lower().endswith('.pdf'):
                 body = part.get('body', {})
                 attachment_id = body.get('attachmentId')
-                
+
                 if attachment_id:
                     attachment = (
                         self.service.users()
