@@ -67,10 +67,10 @@ class GmailService:
 
     def _payload_process(self, parts: list[dict]) -> list[Path]:
         path_files = []
-        
+    
         for part in parts:
             filename = part.get('filename', '')
-            
+        
             if filename.lower().endswith('.pdf'):
                 body = part.get('body', {})
                 attachment_id = body.get('attachmentId')
