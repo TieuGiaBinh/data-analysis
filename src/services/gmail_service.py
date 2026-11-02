@@ -1,10 +1,15 @@
+from pathlib import Path
+import base64
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
+from src.utilize.logger import get_log
 
 
 # Required Google API scope for reading Gmail messages in read-only mode.
 SCOPES = ["https://www.googleapis.com/auth/gmail.readonly"]
+
+logger = get_log(__name__)
 
 
 class GmailService:
@@ -54,8 +59,36 @@ class GmailService:
         response = (
             self.service.users()
             .messages()
-            .get(userId='me', id='gmail_id', format='full', fields='payload')
+            .get(userId='me', id=gmail_id, format='full', fields='payload')
             .execute()
         )
 
         return response
+
+    def _payload_process(self, parts: list[dict]) -> list[Path]:
+        path_files = []
+        
+        for part in parts:
+            filename = part.get('filename', '')
+            
+            if filename.lower().endswith('.pdf'):
+                body = part.get('body', {})
+                attachment_id = body.get('attachmentId')
+                
+                if attachment_id:
+                    attachment = (
+                        self.service.users()
+                        .messages()
+                        .attachments()
+                        .get(userID='me', id=attachment_id)
+                        .execute()
+                    )
+                    file_data = attachment.get('data')
+                    decoded_data = base64.urlsafe_b64decode(file_data)
+                    path_file = Path(filename).write_bytes(decoded_data)
+                    path_files.append(path_file)
+                else:
+                    logger.warning(f'No attachment was found in {filename}')
+
+        return path_files
+        
