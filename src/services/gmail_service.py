@@ -55,7 +55,7 @@ class GmailService:
         # Return the list of matching Gmail message IDs.
         return gmail_ids
 
-    def get_email_payload(self, gmail_id: str):
+    def get_attachment(self, gmail_id: str):
         response = (
             self.service.users()
             .messages()
@@ -63,7 +63,9 @@ class GmailService:
             .execute()
         )
 
-        return response
+        files = self._payload_process(response)
+
+        return files
 
     def _payload_process(self, parts: list[dict]) -> list[Path]:
         path_files = []
