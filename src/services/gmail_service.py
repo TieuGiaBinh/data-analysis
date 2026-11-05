@@ -62,6 +62,7 @@ class GmailService:
             .get(userId='me', id=gmail_id, format='full', fields='payload')
             .execute()
         )
+        logger.info(f'gmail data: {response}')
 
         files = self._payload_process(response)
 
