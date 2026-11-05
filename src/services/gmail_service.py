@@ -68,29 +68,26 @@ class GmailService:
 
         return files
 
-    def _payload_process(self, parts: list[dict]) -> list[Path]:
-        path_files = []
+    def _payload_process(self, name: str, part: dict) -> list[Path]:
+        filename = part.get('filename', '')
+        file_name = f'{name}_{filename}'
 
-        for part in parts:
-            filename = part.get('filename', '')
+        if filename.lower().endswith('.pdf'):
+            body = part.get('body', {})
+            attachment_id = body.get('attachmentId')
 
-            if filename.lower().endswith('.pdf'):
-                body = part.get('body', {})
-                attachment_id = body.get('attachmentId')
+            if attachment_id:
+                attachment = (
+                    self.service.users()
+                    .messages()
+                    .attachments()
+                    .get(userID='me', id=attachment_id)
+                    .execute()
+                )
+                file_data = attachment.get('data')
+                decoded_data = base64.urlsafe_b64decode(file_data)
+                path_file = Path(file_name).write_bytes(decoded_data)
+            else:
+                logger.warning(f'No attachment was found in {filename}')
 
-                if attachment_id:
-                    attachment = (
-                        self.service.users()
-                        .messages()
-                        .attachments()
-                        .get(userID='me', id=attachment_id)
-                        .execute()
-                    )
-                    file_data = attachment.get('data')
-                    decoded_data = base64.urlsafe_b64decode(file_data)
-                    path_file = Path(filename).write_bytes(decoded_data)
-                    path_files.append(path_file)
-                else:
-                    logger.warning(f'No attachment was found in {filename}')
-
-        return path_files
+        return path_file
