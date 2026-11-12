@@ -63,7 +63,9 @@ class GmailService:
             .execute()
         )
         logger.info(response)
-        parts = response.get('parts', [])
+        payload = response.get("payload", {})
+        parts = payload.get("parts", [])
+        logger.info('-------------------------')
         logger.info(parts)
         for part in parts:
             self._payload_process(gmail_id, part)
