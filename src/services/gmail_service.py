@@ -89,7 +89,7 @@ class GmailService:
                 file_data = attachment.get('data')
                 decoded_data = base64.urlsafe_b64decode(file_data)
                 path_file = Path(file_name).write_bytes(decoded_data)
-                logger.info(path_file)
+                logger.info(f'path file: {path_file}')
             else:
                 logger.warning(f'No attachment was found in {filename}')
 
