@@ -63,12 +63,11 @@ class GmailService:
             .execute()
         )
         parts = response.get('parts', [])
+        for part in parts:
+            _payload_process(gmail_id, part)
+                
 
-        files = self._payload_process(parts)
-
-        return files
-
-    def _payload_process(self, name: str, part: dict) -> list[Path]:
+    def _payload_process(self, name: str, part: dict):
         filename = part.get('filename', '')
         file_name = f'{name}_{filename}'
 
@@ -87,7 +86,9 @@ class GmailService:
                 file_data = attachment.get('data')
                 decoded_data = base64.urlsafe_b64decode(file_data)
                 path_file = Path(file_name).write_bytes(decoded_data)
+                logger.info(path_file)
             else:
                 logger.warning(f'No attachment was found in {filename}')
 
-        return path_file
+        for child in part.get('part', []):
+            _payload_process(name, child)
