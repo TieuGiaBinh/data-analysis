@@ -83,7 +83,7 @@ class GmailService:
                     self.service.users()
                     .messages()
                     .attachments()
-                    .get(userID='me', id=attachment_id)
+                    .get(userId='me', id=attachment_id)
                     .execute()
                 )
                 file_data = attachment.get('data')
