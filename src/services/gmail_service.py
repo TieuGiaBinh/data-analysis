@@ -64,6 +64,7 @@ class GmailService:
         )
         payload = response.get("payload", {})
         parts = payload.get("parts", [])
+        logger.info(len(parts))
         for part in parts:
             self._payload_process(gmail_id, part)
             logger.info('complete search session')
@@ -71,12 +72,10 @@ class GmailService:
     def _payload_process(self, name: str, part: dict):
         filename = part.get('filename', '')
         file_name = f'{name}_{filename}'
-        logger.info(f'file name: {file_name}')
 
         if filename.lower().endswith('.pdf'):
             body = part.get('body', {})
             attachment_id = body.get('attachmentId')
-            logger.info('pdf file is existed')
 
             if attachment_id:
                 attachment = (
