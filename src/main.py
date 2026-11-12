@@ -12,8 +12,7 @@ def main():
     gmail_ids = gmail_service.get_email_ids('TCBS - ')
     logger.info(gmail_ids)
     for gmail_id in gmail_ids:
-        file = gmail_service.get_attachment(gmail_id)
-        logger.info(file)
+        gmail_service.get_attachment(gmail_id)
 
 
 if __name__ == '__main__':
