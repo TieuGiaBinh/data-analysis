@@ -64,10 +64,8 @@ class GmailService:
         )
         payload = response.get("payload", {})
         parts = payload.get("parts", [])
-        logger.info(len(parts))
         for part in parts:
             self._payload_process(gmail_id, part)
-            logger.info('complete search session')
 
     def _payload_process(self, name: str, part: dict):
         filename = part.get('filename', '')
