@@ -62,7 +62,7 @@ class GmailService:
             .get(userId='me', id=gmail_id, format='full', fields='payload')
             .execute()
         )
-        logger.info('got response')
+        logger.info(response)
         parts = response.get('parts', [])
         logger.info(parts)
         for part in parts:
