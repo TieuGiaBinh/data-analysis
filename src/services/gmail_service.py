@@ -62,9 +62,12 @@ class GmailService:
             .get(userId='me', id=gmail_id, format='full', fields='payload')
             .execute()
         )
+        logger.info('got response')
         parts = response.get('parts', [])
+        logger.info(parts)
         for part in parts:
             self._payload_process(gmail_id, part)
+            logger.info('complete search session')
 
     def _payload_process(self, name: str, part: dict):
         filename = part.get('filename', '')
