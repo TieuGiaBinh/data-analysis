@@ -17,5 +17,6 @@ def main():
 
     logger.info(f'attachments: {files}')
 
+
 if __name__ == '__main__':
     main()
