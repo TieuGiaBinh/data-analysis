@@ -63,9 +63,7 @@ class GmailService:
             .execute()
         )
         payload = response.get("payload", {})
-        parts = payload.get("parts", [])
-        for part in parts:
-            self._payload_process(gmail_id, part)
+        return list(self._payload_process(gmail_id, payload))
 
     def _payload_process(self, name: str, part: dict):
         filename = part.get('filename', '')
@@ -90,5 +88,5 @@ class GmailService:
             else:
                 logger.warning(f'No attachment was found in {filename}')
 
-        for child in part.get('part', []):
+        for child in part.get('parts', []):
             yield from self._payload_process(name, child)
