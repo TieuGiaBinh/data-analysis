@@ -13,7 +13,7 @@ def main():
     logger.info(gmail_ids)
     files = []
     for gmail_id in gmail_ids:
-        files.append(gmail_service.get_attachment(gmail_id))
+        files.extend(gmail_service.get_attachment(gmail_id))
 
     logger.info(f'attachments: {files}')
 
