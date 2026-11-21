@@ -1,10 +1,15 @@
+from pathlib import Path
+import base64
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
+from src.utilize.logger import get_log
 
 
 # Required Google API scope for reading Gmail messages in read-only mode.
 SCOPES = ["https://www.googleapis.com/auth/gmail.readonly"]
+
+logger = get_log(__name__)
 
 
 class GmailService:
@@ -50,12 +55,39 @@ class GmailService:
         # Return the list of matching Gmail message IDs.
         return gmail_ids
 
-    def get_email_payload(self, gmail_id: str):
+    def get_attachment(self, gmail_id: str):
         response = (
             self.service.users()
             .messages()
-            .get(userId='me', id='gmail_id', format='full', fields='payload')
+            .get(userId='me', id=gmail_id, format='full', fields='payload')
             .execute()
         )
+        payload = response.get("payload", {})
+        return list(self._payload_process(gmail_id, payload))
 
-        return response
+    def _payload_process(self, name: str, part: dict):
+        filename = part.get('filename', '')
+        file_name = f'{name}_{filename}'
+
+        if filename.lower().endswith('.pdf'):
+            body = part.get('body', {})
+            attachment_id = body.get('attachmentId')
+
+            if attachment_id:
+                attachment = (
+                    self.service.users()
+                    .messages()
+                    .attachments()
+                    .get(userId='me', id=attachment_id, messageId=name)
+                    .execute()
+                )
+                file_data = attachment.get('data')
+                decoded_data = base64.urlsafe_b64decode(file_data)
+                path_file = Path(file_name)
+                path_file.write_bytes(decoded_data)
+                yield path_file
+            else:
+                logger.warning(f'No attachment was found in {filename}')
+
+        for child in part.get('parts', []):
+            yield from self._payload_process(name, child)
